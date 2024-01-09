@@ -1,4 +1,4 @@
-package com.sft.sftassignment.ui.activities
+package com.sft.sftassignment.ui.activities.splash
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
 import com.sft.sftassignment.R
+import com.sft.sftassignment.ui.activities.main.MainActivity
 
 class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
