@@ -1,23 +1,40 @@
 package com.sft.sftassignment.ui.activities.main
 
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.sft.sftassignment.R
+import com.sft.sftassignment.base.BaseActivity
 import com.sft.sftassignment.databinding.ActivityMainBinding
 import com.sft.sftassignment.model.ListResponse
 import com.sft.sftassignment.model.ListResponseItem
+import com.sft.sftassignment.network.AppViewModel
 import com.sft.sftassignment.ui.common.ViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
-class MainActivity : AppCompatActivity() {
+@AndroidEntryPoint
+class MainActivity : BaseActivity() {
     lateinit var binding: ActivityMainBinding
 
     private val mainItemAdapter: MainItemAdapter = MainItemAdapter(ArrayList())
+    private val appViewModel: AppViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        dummyList()
+
+        binding.rvList.adapter = mainItemAdapter
+        val viewModels = ArrayList<ViewModel>()
+
+        appViewModel.fetchList(page = 1, limit = 10)
+        appViewModel.fetchListLiveData.observe(this) { response ->
+            response.forEach {
+                val mainItemViewModel = MainItemViewModel(this, it)
+                viewModels.add(mainItemViewModel)
+            }
+            mainItemAdapter.setList(viewModels)
+        }
     }
 
     private fun dummyList() {
