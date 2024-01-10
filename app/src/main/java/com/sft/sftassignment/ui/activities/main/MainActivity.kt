@@ -4,6 +4,10 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.MemoryCategory
 import com.sft.sftassignment.R
 import com.sft.sftassignment.base.BaseActivity
 import com.sft.sftassignment.databinding.ActivityMainBinding
@@ -20,73 +24,67 @@ class MainActivity : BaseActivity() {
     private val mainItemAdapter: MainItemAdapter = MainItemAdapter(ArrayList())
     private val appViewModel: AppViewModel by viewModels()
 
+    val viewModelList = ArrayList<ViewModel>()
+
+    var currentPage = 1
+    var isMoreDataAvailable = true
+    val itemsPerPage = 10
+    var isLoading = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
         binding.rvList.adapter = mainItemAdapter
-        val viewModels = ArrayList<ViewModel>()
 
-        appViewModel.fetchList(page = 1, limit = 10)
-        appViewModel.fetchListLiveData.observe(this) { response ->
-            response.forEach {
-                val mainItemViewModel = MainItemViewModel(this, it)
-                viewModels.add(mainItemViewModel)
+        loadData()
+        binding.rvList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
+                val totalItemCount = layoutManager.itemCount
+
+                if (lastVisibleItemPosition == totalItemCount - 1 && !isLoading && isMoreDataAvailable) {
+                    loadMoreData()
+                }
             }
-            mainItemAdapter.setList(viewModels)
+        })
+
+        appViewModel.fetchListLiveData.observe(this) { response ->
+            if (response.isNotEmpty()) {
+                response.forEach {
+                    val mainItemViewModel = MainItemViewModel(this, it)
+                    viewModelList.add(mainItemViewModel)
+                }
+                mainItemAdapter.setList(viewModelList)
+            } else {
+                isMoreDataAvailable = false
+            }
+
+            isLoading = false
         }
     }
 
-    private fun dummyList() {
-        binding.rvList.adapter = mainItemAdapter
-        val list = ListResponse()
-        list.add(
-            ListResponseItem(
-                "Desc 1",
-                "https://picsum.photos/id/20/3670/2462",
-                0,
-                "Title 1",
-                "https://unsplash.com/photos/nJdwUHmaY8A",
-                0
-            )
-        )
-        list.add(
-            ListResponseItem(
-                "Desc 2",
-                "https://picsum.photos/id/20/3670/2462",
-                0,
-                "Title 2",
-                "https://unsplash.com/photos/nJdwUHmaY8A",
-                0
-            )
-        )
-        list.add(
-            ListResponseItem(
-                "Desc 3",
-                "https://picsum.photos/id/20/3670/2462",
-                0,
-                "Title 3",
-                "https://unsplash.com/photos/nJdwUHmaY8A",
-                0
-            )
-        )
-        list.add(
-            ListResponseItem(
-                "Desc 4",
-                "https://picsum.photos/id/20/3670/2462",
-                0,
-                "Title 4",
-                "https://unsplash.com/photos/nJdwUHmaY8A",
-                0
-            )
-        )
+    private fun loadData() {
+        currentPage = 1
+        viewModelList.clear()
+        mainItemAdapter.setList(viewModelList)
 
-        var viewModels = ArrayList<ViewModel>()
-
-        list.forEach {
-            val mainItemViewModel = MainItemViewModel(this, it)
-            viewModels.add(mainItemViewModel)
-        }
-        mainItemAdapter.setList(viewModels)
+        fetchData()
     }
+
+    private fun loadMoreData() {
+        currentPage++
+
+        fetchData()
+    }
+
+    private fun fetchData() {
+        isLoading = true
+
+        appViewModel.fetchList(page = currentPage, limit = itemsPerPage)
+    }
+
 }

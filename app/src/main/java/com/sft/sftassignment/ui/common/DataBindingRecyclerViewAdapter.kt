@@ -42,6 +42,10 @@ abstract class DataBindingRecyclerViewAdapter(viewModels: MutableList<ViewModel>
         return mViewModels.size
     }
 
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
+    }
+
     abstract val viewModelLayoutMap: Map<Class<*>, Int>
 
     @SuppressLint("NotifyDataSetChanged")
