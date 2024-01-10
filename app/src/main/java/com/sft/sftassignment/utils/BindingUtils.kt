@@ -5,8 +5,8 @@ import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
 
-@BindingAdapter("app:setImageUrl")
-fun setImageUrl(
+@BindingAdapter("setImageUrlPath")
+fun setImageUrlPath(
     imageView: ImageView,
     url: String
 ) {

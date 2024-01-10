@@ -7,6 +7,5 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 open class BaseActivity @Inject constructor() : AppCompatActivity() {
-//open class BaseActivity : AppCompatActivity() {
 
 }
