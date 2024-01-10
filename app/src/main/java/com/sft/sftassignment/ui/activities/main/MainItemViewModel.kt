@@ -3,10 +3,11 @@ package com.sft.sftassignment.ui.activities.main
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.ObservableField
+import com.sft.sftassignment.interfaces.ItemClickListener
 import com.sft.sftassignment.model.ListResponseItem
 import com.sft.sftassignment.ui.common.ViewModel
 
-class MainItemViewModel(val mActivity: AppCompatActivity, private val item: ListResponseItem) : ViewModel {
+class MainItemViewModel(val itemClickListener: ItemClickListener, private val item: ListResponseItem) : ViewModel {
 
 
     @JvmField
@@ -25,7 +26,7 @@ class MainItemViewModel(val mActivity: AppCompatActivity, private val item: List
     }
 
     fun onItemClick(view: View) {
-        //Open dialog
+        itemClickListener.onClick(item.author)
     }
 
     override fun close() {

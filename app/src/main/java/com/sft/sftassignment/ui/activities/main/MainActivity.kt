@@ -2,6 +2,7 @@ package com.sft.sftassignment.ui.activities.main
 
 import android.os.Bundle
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -11,6 +12,7 @@ import com.bumptech.glide.MemoryCategory
 import com.sft.sftassignment.R
 import com.sft.sftassignment.base.BaseActivity
 import com.sft.sftassignment.databinding.ActivityMainBinding
+import com.sft.sftassignment.interfaces.ItemClickListener
 import com.sft.sftassignment.model.ListResponse
 import com.sft.sftassignment.model.ListResponseItem
 import com.sft.sftassignment.network.AppViewModel
@@ -18,7 +20,7 @@ import com.sft.sftassignment.ui.common.ViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainActivity : BaseActivity() {
+class MainActivity : BaseActivity(), ItemClickListener {
     lateinit var binding: ActivityMainBinding
 
     private val mainItemAdapter: MainItemAdapter = MainItemAdapter(ArrayList())
@@ -88,6 +90,19 @@ class MainActivity : BaseActivity() {
         isLoading = true
 
         appViewModel.fetchList(page = currentPage, limit = itemsPerPage)
+    }
+
+    override fun onClick(description:String) {
+        val alertDialogBuilder = AlertDialog.Builder(this)
+
+        alertDialogBuilder.setMessage(description)
+
+        alertDialogBuilder.setPositiveButton("OK") { dialog, which ->
+            dialog.dismiss()
+        }
+
+        val alertDialog = alertDialogBuilder.create()
+        alertDialog.show()
     }
 
 }
