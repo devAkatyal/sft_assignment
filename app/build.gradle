@@ -80,6 +80,8 @@ dependencies {
 
     implementation libs.multidex
 
+    implementation libs.androidx.swiperefreshlayout
+
 }
 apply plugin: 'kotlin-kapt'
 apply plugin: 'dagger.hilt.android.plugin'

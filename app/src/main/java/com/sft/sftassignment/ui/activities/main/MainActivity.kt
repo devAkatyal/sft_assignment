@@ -38,6 +38,9 @@ class MainActivity : BaseActivity() {
         binding.rvList.adapter = mainItemAdapter
 
         loadData()
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            loadData()
+        }
         binding.rvList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
@@ -62,7 +65,7 @@ class MainActivity : BaseActivity() {
             } else {
                 isMoreDataAvailable = false
             }
-
+            binding.swipeRefreshLayout.isRefreshing = false
             isLoading = false
         }
     }
